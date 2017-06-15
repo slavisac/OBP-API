@@ -1,8 +1,5 @@
 package code.bankconnectors
 
-/**
-  * Created by slavisa on 6/5/17.
-  */
 case class AuthInfo(userId: String, username: String)
 
 /**
