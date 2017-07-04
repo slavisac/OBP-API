@@ -185,17 +185,9 @@ object KafkaMappedConnector_vJun2017 extends Connector with KafkaHelper with Mdc
       val bankId = bank.bankId.value
       logger.info(s"ObpJvm updateUserAccountViews for user.email ${user.email} user.name ${user.name} at bank ${bankId}")
       for {
-        username <- tryo(user.name)
-        req <- Full(OutboundUserAccountViewsBase(
-          messageFormat = messageFormat,
-          action = "obp.get.Accounts",
-          username = user.name,
-          userId = user.name,
-          bankId = bankId))
-
-      // Generate random uuid to be used as request-response match id
+        req <- Full(GetUserBankAccounts(AuthInfo(user.name, user.name), bankId))
       } yield {
-        cachedUserAccounts.getOrElseUpdate(req.toString, () => process(req).extract[List[InboundAccount]])
+        cachedUserAccounts.getOrElseUpdate(req.toString, () => process[GetUserBankAccounts](req).extract[List[InboundAccount]])
       }
     }
     }.flatten
